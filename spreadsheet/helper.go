@@ -185,7 +185,7 @@ func (r Range) String() string {
 	min, max := r.Min, r.Max
 
 	if min.GreaterThan(max) {
-		min, max := max, min
+		min, max = max, min
 	}
 
 	return fmt.Sprintf("%v:%v", min, max)
@@ -196,7 +196,7 @@ func (r Range) Square() int {
 	min, max := r.Min, r.Max
 
 	if min.GreaterThan(max) {
-		min, max := max, min
+		min, max = max, min
 	}
 
 	w := max.Col - min.Col
