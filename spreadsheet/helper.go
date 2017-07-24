@@ -88,7 +88,7 @@ func (c CellAddr) GreaterThan(b CellAddr) bool {
 
 // Move moves cell
 // TODO: test
-func (c CellAddr) Move(ver, hor int) {
+func (c CellAddr) Move(ver, hor int) CellAddr {
 	// ???
 	if ver < 0 {
 		c.Row -= uint16(ver)
@@ -101,6 +101,8 @@ func (c CellAddr) Move(ver, hor int) {
 	} else {
 		c.Col += uint16(hor)
 	}
+
+	return c
 }
 
 // colRunes return runes describing excel column name
@@ -225,9 +227,11 @@ func (r Range) Square() int {
 
 // Move moves entire range
 // TODO: test
-func (r Range) Move(ver, hor int) {
-	r.Min.Move(ver, hor)
-	r.Max.Move(ver, hor)
+func (r Range) Move(ver, hor int) Range {
+	return Range{
+		r.Min.Move(ver, hor),
+		r.Max.Move(ver, hor),
+	}
 }
 
 // ID extracts spreadsheet id from given url
