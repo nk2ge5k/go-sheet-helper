@@ -86,6 +86,23 @@ func (c CellAddr) GreaterThan(b CellAddr) bool {
 	return false
 }
 
+// Move moves cell
+// TODO: test
+func (c CellAddr) Move(ver, hor int) {
+	// ???
+	if ver < 0 {
+		c.Row -= uint16(ver)
+	} else {
+		c.Row += uint16(ver)
+	}
+
+	if hor < 0 {
+		c.Col -= uint16(hor)
+	} else {
+		c.Col += uint16(hor)
+	}
+}
+
 // colRunes return runes describing excel column name
 func colRunes(col int) []rune {
 	i := digitsCount(col, base)
@@ -176,6 +193,7 @@ func NewRange(str string) (Range, error) {
 }
 
 // Range represents excel range (e.g A1:B223)
+// TODO: add optional sheet name
 type Range struct {
 	Min, Max CellAddr
 }
@@ -203,6 +221,13 @@ func (r Range) Square() int {
 	h := max.Row - min.Col
 
 	return int(w * h)
+}
+
+// Move moves entire range
+// TODO: test
+func (r Range) Move(ver, hor int) {
+	r.Min.Move(ver, hor)
+	r.Max.Move(ver, hor)
 }
 
 // ID extracts spreadsheet id from given url
