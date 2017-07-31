@@ -21,14 +21,17 @@ func Copy(dst CSVWriter, srv *sheets.Service, id, name string) error {
 	// TODO: test on big files
 	// maybe need to read by chunks
 
-	resp, err := resp.Spreadsheets.Values.Get(id, name).Do()
+	resp, err := srv.Spreadsheets.Values.Get(id, name).Do()
+	if err != nil {
+		return fmt.Errorf("copy: %v", err)
+	}
 
 	var row []string
 
 	for _, vals := range resp.Values {
 		if cap(row) == 0 {
 			// Create new slice if current is empty
-			row = make([]string, 0, len(vals)+int(len(vals)*0.25))
+			row = make([]string, 0, len(vals))
 		}
 
 		// reset row len to reuse
@@ -44,7 +47,7 @@ func Copy(dst CSVWriter, srv *sheets.Service, id, name string) error {
 			row = append(row, s)
 		}
 
-		if err := dst.Wirte(row); err != nil {
+		if err := dst.Write(row); err != nil {
 			return fmt.Errorf("copy: %v", err)
 		}
 	}
