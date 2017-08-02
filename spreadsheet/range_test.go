@@ -162,3 +162,57 @@ func TestRangeString(t *testing.T) {
 		}
 	}
 }
+
+func TestRangeMove(t *testing.T) {
+	tt := []struct {
+		start      string
+		vertical   int
+		horizontal int
+		result     string
+	}{
+		{"A1:A2", 1, 1, "B2:B3"},
+		{"J23:L27", -10, -5, "E13:G17"},
+		{"B33:C44", 0, 0, "B33:C44"},
+		{"B33:A2", 0, 10, "K2:L33"},
+	}
+
+	for _, tc := range tt {
+		r, err := NewRange(tc.start)
+		if err != nil {
+			t.Errorf("unable to create range '%s': %v", tc.start, err)
+		}
+
+		res := r.Move(tc.vertical, tc.horizontal)
+		if res.String() != tc.result {
+			t.Errorf(
+				"Range{%v}.Move(%d, %d) = %v, want %s",
+				r, tc.vertical, tc.horizontal, res, tc.result,
+			)
+		}
+	}
+}
+
+func TestSquare(t *testing.T) {
+	tt := []struct {
+		trange string
+		square int
+	}{
+		{"A1:A1", 1},
+		{"J23:L27", 15},
+		{"B2:A1", 4},
+		{"C5:D9", 10},
+		{"D9:C5", 10},
+	}
+
+	for _, tc := range tt {
+		r, err := NewRange(tc.trange)
+		if err != nil {
+			t.Errorf("unable to create range '%s': %v", tc.trange, err)
+		}
+
+		if sq := r.Square(); sq != tc.square {
+			t.Errorf("Range{%v}.Square() = %d, want %d", r, sq, tc.square)
+		}
+	}
+
+}

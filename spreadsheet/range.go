@@ -12,8 +12,8 @@ import (
 const base int = 26
 
 var (
-	// re is regexp for extracting spreadsheet id from url
-	re *regexp.Regexp = regexp.MustCompile("spreadsheets/d/([a-zA-Z0-9-_]+)")
+	// RegexpSpeadsheetId is regexp for extracting spreadsheet id from url
+	RegexpSpeadsheetId *regexp.Regexp = regexp.MustCompile("spreadsheets/d/([a-zA-Z0-9-_]+)")
 	// ErrNotFound error represents error that returns when spreadsheet id not found
 	ErrNotFound error = fmt.Errorf("spreadsheet id not found")
 
@@ -90,19 +90,8 @@ func (c CellAddr) GreaterThan(b CellAddr) bool {
 // TODO: test
 func (c CellAddr) Move(ver, hor int) CellAddr {
 	// ???
-	if ver < 0 {
-		c.Row -= uint16(ver)
-	} else {
-		c.Row += uint16(ver)
-	}
-
-	if hor < 0 {
-		c.Col -= uint16(hor)
-	} else {
-		c.Col += uint16(hor)
-	}
-
-	return c
+	row, col := int(c.Row)+ver, int(c.Col)+hor
+	return CellAddr{uint16(col), uint16(row)}
 }
 
 // colRunes return runes describing excel column name
@@ -219,8 +208,8 @@ func (r Range) Square() int {
 		min, max = max, min
 	}
 
-	w := max.Col - min.Col
-	h := max.Row - min.Col
+	w := max.Col - min.Col + 1
+	h := max.Row - min.Row + 1
 
 	return int(w * h)
 }
@@ -251,7 +240,7 @@ func ID(src string) (string, error) {
 		)
 	}
 
-	if res := re.FindStringSubmatch(src); len(res) == 2 {
+	if res := RegexpSpeadsheetId.FindStringSubmatch(src); len(res) == 2 {
 		return res[1], nil
 	}
 
